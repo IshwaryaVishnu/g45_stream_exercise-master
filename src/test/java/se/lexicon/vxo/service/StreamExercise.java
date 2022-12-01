@@ -71,8 +71,6 @@ public class StreamExercise {
         List<Person> females = null;
         females =
         people.stream().filter(person -> person.getGender().equals(Gender.FEMALE)).collect(Collectors.toList());
-
-
         //todo: Write code here
 
 
@@ -87,6 +85,8 @@ public class StreamExercise {
     public void task5(){
         int expectedSize = 8882;
         Set<LocalDate> dates = null;
+        dates = people.stream().map(Person::getDateOfBirth).collect(Collectors.toCollection(TreeSet::new));
+
 
         //todo: Write code here
 
@@ -104,7 +104,7 @@ public class StreamExercise {
 
         Person[] result = null;
 
-        //todo: Write code here
+
 
         assertNotNull(result);
         assertEquals(expectedLength, result.length);
@@ -118,6 +118,7 @@ public class StreamExercise {
         Person expected = new Person(5436, "Tea", "Håkansson", LocalDate.parse("1968-01-25"), Gender.FEMALE);
 
         Optional<Person> optional = null;
+
 
         //todo: Write code here
 
