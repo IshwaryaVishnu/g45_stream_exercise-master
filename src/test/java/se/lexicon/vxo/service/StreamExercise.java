@@ -7,6 +7,7 @@ import se.lexicon.vxo.model.PersonDto;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -103,9 +104,7 @@ public class StreamExercise {
         int expectedLength = 3;
 
         Person[] result = null;
-
-
-
+        result = people.stream().filter(person -> person.getFirstName().equals("Erik")).toArray(Person[]::new);
         assertNotNull(result);
         assertEquals(expectedLength, result.length);
     }
@@ -118,6 +117,7 @@ public class StreamExercise {
         Person expected = new Person(5436, "Tea", "Håkansson", LocalDate.parse("1968-01-25"), Gender.FEMALE);
 
         Optional<Person> optional = null;
+        people.stream().filter(person -> person.getPersonId() == 5436);
 
 
         //todo: Write code here
@@ -151,6 +151,12 @@ public class StreamExercise {
         LocalDate date = LocalDate.parse("1920-01-01");
 
         List<PersonDto> dtoList = null;
+        List<Person> personList = new ArrayList<Person>();
+        personList = people.stream().filter(person -> person.getDateOfBirth().isBefore(date)).collect(Collectors.toList());
+        personList.stream();
+        for (Person person: personList) {
+
+        }
 
         //todo: Write code here
 
