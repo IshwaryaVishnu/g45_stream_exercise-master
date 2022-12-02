@@ -9,10 +9,12 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * You have to solve each task by using a java.util.Stream or any of it's variance.
  * You also need to use lambda expressions as implementation to functional interfaces.
  * (No Anonymous Inner Classes or Class implementation of functional interfaces)
- *
  */
 public class StreamExercise {
 
@@ -32,8 +33,8 @@ public class StreamExercise {
      * Turn integers into a stream then use forEach as a terminal operation to print out the numbers
      */
     @Test
-    public void task1(){
-        List<Integer> integers = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
+    public void task1() {
+        List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         integers.stream().forEach(System.out::println);
 
         //todo: Write code here
@@ -44,7 +45,7 @@ public class StreamExercise {
      * Turning people into a Stream count all members
      */
     @Test
-    public void task2(){
+    public void task2() {
         long amount = 0;
         amount = people.stream().count();
         //todo: Write code here
@@ -56,10 +57,10 @@ public class StreamExercise {
      * Count all people that has Andersson as lastName.
      */
     @Test
-    public void task3(){
+    public void task3() {
         long amount = 0;
         int expected = 90;
-        amount = people.stream().filter(people ->people.getLastName().endsWith("Andersson")).count();
+        amount = people.stream().filter(people -> people.getLastName().endsWith("Andersson")).count();
 
         //todo: Write code here
 
@@ -70,11 +71,11 @@ public class StreamExercise {
      * Extract a list of all female
      */
     @Test
-    public void task4(){
+    public void task4() {
         int expectedSize = 4988;
         List<Person> females = null;
         females =
-        people.stream().filter(person -> person.getGender().equals(Gender.FEMALE)).collect(Collectors.toList());
+                people.stream().filter(person -> person.getGender().equals(Gender.FEMALE)).collect(Collectors.toList());
         //todo: Write code here
 
 
@@ -86,7 +87,7 @@ public class StreamExercise {
      * Extract a TreeSet with all birthDates
      */
     @Test
-    public void task5(){
+    public void task5() {
         int expectedSize = 8882;
         Set<LocalDate> dates = null;
         dates = people.stream().map(Person::getDateOfBirth).collect(Collectors.toCollection(TreeSet::new));
@@ -103,7 +104,7 @@ public class StreamExercise {
      * Extract an array of all people named "Erik"
      */
     @Test
-    public void task6(){
+    public void task6() {
         int expectedLength = 3;
 
         Person[] result = null;
@@ -116,7 +117,7 @@ public class StreamExercise {
      * Find a person that has id of 5436
      */
     @Test
-    public void task7(){
+    public void task7() {
         Person expected = new Person(5436, "Tea", "Håkansson", LocalDate.parse("1968-01-25"), Gender.FEMALE);
 
         Optional<Person> optional = null;
@@ -132,7 +133,7 @@ public class StreamExercise {
      * Using min() define a comparator that extracts the oldest person i the list as an Optional
      */
     @Test
-    public void task8(){
+    public void task8() {
         LocalDate expectedBirthDate = LocalDate.parse("1910-01-02");
 
         Optional<Person> optional = null;
@@ -146,14 +147,14 @@ public class StreamExercise {
      * Map each person born before 1920-01-01 into a PersonDto object then extract to a List
      */
     @Test
-    public void task9(){
+    public void task9() {
         int expectedSize = 892;
         LocalDate date = LocalDate.parse("1920-01-01");
         Function<Person, PersonDto> function = person -> new PersonDto(person.getPersonId(), person.getFirstName().
                 concat(" ").concat(person.getLastName()));
 
         List<PersonDto> dtoList = null;
-        dtoList = people.stream().filter(person->person.getDateOfBirth().isBefore(date)).map(function).collect(Collectors.toList());
+        dtoList = people.stream().filter(person -> person.getDateOfBirth().isBefore(date)).map(function).collect(Collectors.toList());
 
 
         //todo: Write code here
@@ -167,12 +168,12 @@ public class StreamExercise {
      * return the string.
      */
     @Test
-    public void task10(){
+    public void task10() {
         String expected = "WEDNESDAY 19 DECEMBER 2012";
         int personId = 5914;
 
         Optional<String> optional = null;
-        optional = people.stream().filter(person -> person.getPersonId() == 5914).findFirst().map(person -> person.getDateOfBirth().format(DateTimeFormatter.ofLocalizedDateTime("DDMMYYYY").toString().toUpperCase()));
+        optional = people.stream().filter(person -> person.getPersonId() == 5914).findFirst().map(person -> person.getDateOfBirth().format(DateTimeFormatter.ofPattern(("EEEE dd MMMM yyyy"))).toUpperCase());
 
         //todo: Write code here
 
@@ -186,11 +187,13 @@ public class StreamExercise {
      * changing type of stream to an IntStream.
      */
     @Test
-    public void task11(){
+    public void task11() {
         ToIntFunction<Person> personToAge =
                 person -> Period.between(person.getDateOfBirth(), LocalDate.parse("2019-12-20")).getYears();
         double expected = 54.42;
-        double averageAge = 0;
+        double averageAge = people.stream()
+                .mapToInt(personToAge)
+                .average().getAsDouble();
 
         //todo: Write code here
 
@@ -202,10 +205,24 @@ public class StreamExercise {
      * Extract from people a sorted string array of all firstNames that are palindromes. No duplicates
      */
     @Test
-    public void task12(){
+    public void task12() {
         String[] expected = {"Ada", "Ana", "Anna", "Ava", "Aya", "Bob", "Ebbe", "Efe", "Eje", "Elle", "Hannah", "Maram", "Natan", "Otto"};
-
         String[] result = null;
+        result = people.stream().
+                filter(person -> person.getFirstName().equalsIgnoreCase(new StringBuilder(person.getFirstName())
+                        .reverse().toString())).map(person -> person.getFirstName()).distinct().sorted().toArray(String[]::new);
+
+        /*
+        result = people.stream()// create a stream of person list
+                .map(person -> person.getFirstName()) // create a new stream of firstName
+                .filter(name -> {
+                    StringBuilder stringBuilder = new StringBuilder(name);
+                    return stringBuilder.reverse().toString().equals(name);
+                })
+                .sorted()
+                .toArray(String[]::new);
+
+         */
 
         //todo: Write code here
 
@@ -217,9 +234,10 @@ public class StreamExercise {
      * Extract from people a map where each key is a last name with a value containing a list of all that has that lastName
      */
     @Test
-    public void task13(){
+    public void task13() {
         int expectedSize = 107;
         Map<String, List<Person>> personMap = null;
+        personMap = people.stream().filter(person -> person.getLastName() != null).collect(Collectors.groupingBy(Person::getLastName));
 
         //todo: Write code here
 
@@ -231,8 +249,13 @@ public class StreamExercise {
      * Create a calendar using Stream.iterate of year 2020. Extract to a LocalDate array
      */
     @Test
-    public void task14(){
+    public void task14() {
         LocalDate[] _2020_dates = null;
+        LocalDate start = LocalDate.parse("2020-01-01");
+        LocalDate end = LocalDate.parse("2020-12-31");
+
+        _2020_dates = Stream.iterate(start, date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(start, end) + 1).toArray(LocalDate[]::new);
 
         //todo: Write code here
 
@@ -240,7 +263,7 @@ public class StreamExercise {
         assertNotNull(_2020_dates);
         assertEquals(366, _2020_dates.length);
         assertEquals(LocalDate.parse("2020-01-01"), _2020_dates[0]);
-        assertEquals(LocalDate.parse("2020-12-31"), _2020_dates[_2020_dates.length-1]);
+        assertEquals(LocalDate.parse("2020-12-31"), _2020_dates[_2020_dates.length - 1]);
     }
 
 }
