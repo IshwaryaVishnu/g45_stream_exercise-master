@@ -212,17 +212,7 @@ public class StreamExercise {
                 filter(person -> person.getFirstName().equalsIgnoreCase(new StringBuilder(person.getFirstName())
                         .reverse().toString())).map(person -> person.getFirstName()).distinct().sorted().toArray(String[]::new);
 
-        /*
-        result = people.stream()// create a stream of person list
-                .map(person -> person.getFirstName()) // create a new stream of firstName
-                .filter(name -> {
-                    StringBuilder stringBuilder = new StringBuilder(name);
-                    return stringBuilder.reverse().toString().equals(name);
-                })
-                .sorted()
-                .toArray(String[]::new);
 
-         */
 
         //todo: Write code here
 
