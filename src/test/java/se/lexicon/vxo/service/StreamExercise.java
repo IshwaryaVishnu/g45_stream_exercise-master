@@ -8,7 +8,9 @@ import se.lexicon.vxo.model.PersonDto;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.chrono.ChronoLocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StreamExercise {
 
     private static List<Person> people = People.INSTANCE.getPeople();
+
 
     /**
      * Turn integers into a stream then use forEach as a terminal operation to print out the numbers
@@ -117,10 +120,8 @@ public class StreamExercise {
         Person expected = new Person(5436, "Tea", "Håkansson", LocalDate.parse("1968-01-25"), Gender.FEMALE);
 
         Optional<Person> optional = null;
-        people.stream().filter(person -> person.getPersonId() == 5436);
+        optional = people.stream().filter(person -> person.getPersonId() == 5436).findAny();
 
-
-        //todo: Write code here
 
         assertNotNull(optional);
         assertTrue(optional.isPresent());
@@ -135,8 +136,7 @@ public class StreamExercise {
         LocalDate expectedBirthDate = LocalDate.parse("1910-01-02");
 
         Optional<Person> optional = null;
-
-        //todo: Write code here
+        optional = people.stream().min(Comparator.comparing(Person::getDateOfBirth));
 
         assertNotNull(optional);
         assertEquals(expectedBirthDate, optional.get().getDateOfBirth());
@@ -149,14 +149,12 @@ public class StreamExercise {
     public void task9(){
         int expectedSize = 892;
         LocalDate date = LocalDate.parse("1920-01-01");
+        Function<Person, PersonDto> function = person -> new PersonDto(person.getPersonId(), person.getFirstName().
+                concat(" ").concat(person.getLastName()));
 
         List<PersonDto> dtoList = null;
-        List<Person> personList = new ArrayList<Person>();
-        personList = people.stream().filter(person -> person.getDateOfBirth().isBefore(date)).collect(Collectors.toList());
-        personList.stream();
-        for (Person person: personList) {
+        dtoList = people.stream().filter(person->person.getDateOfBirth().isBefore(date)).map(function).collect(Collectors.toList());
 
-        }
 
         //todo: Write code here
 
@@ -174,6 +172,7 @@ public class StreamExercise {
         int personId = 5914;
 
         Optional<String> optional = null;
+        optional = people.stream().filter(person -> person.getPersonId() == 5914).findFirst().map(person -> person.getDateOfBirth().format(DateTimeFormatter.ofLocalizedDateTime("DDMMYYYY").toString().toUpperCase()));
 
         //todo: Write code here
 
